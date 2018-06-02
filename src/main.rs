@@ -8,7 +8,7 @@ use std::collections::binary_heap::BinaryHeap;
 
 fn main() {
     let file = File::open("/home/chris/Workspace/rust/min_heap/median.txt").unwrap();
-    let mut reader = BufReader::new(file);
+    let reader = BufReader::new(file);
 
     let mut min_heap: MinHeap<i32> = MinHeap::new();
     let mut max_heap: BinaryHeap<i32> = BinaryHeap::new();
@@ -25,7 +25,7 @@ fn main() {
             } else {
                 min_heap.push(num);
             }
-        } else {
+        } else { // if min_heap is empty or neither are empty
             if num > *max_heap.peek().unwrap() {
                 min_heap.push(num);
             } else {
