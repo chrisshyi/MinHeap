@@ -50,7 +50,7 @@ impl <T: Ord + Copy> MinHeap<T> {
 
         if child2_index < self.len() {
             let child2 = self.data[child2_index]; 
-            if node_to_sink < child1 && node_to_sink < child2 {
+            if node_to_sink > child1 && node_to_sink > child2 {
                 if child1 < child2 {
                     self.data.swap(index, child1_index);
                     self.sink_down(child1_index);
@@ -58,15 +58,15 @@ impl <T: Ord + Copy> MinHeap<T> {
                     self.data.swap(index, child2_index);
                     self.sink_down(child2_index);
                 }
-            } else if node_to_sink < child1 {
+            } else if node_to_sink > child1 {
                 self.data.swap(index, child1_index);
                 self.sink_down(child1_index);
-            } else if node_to_sink < child2 {
+            } else if node_to_sink > child2 {
                 self.data.swap(index, child2_index);
                 self.sink_down(child2_index);
             } 
         } else {
-            if node_to_sink < child1 {
+            if node_to_sink > child1 {
                 self.data.swap(index, child1_index);
                 self.sink_down(child1_index);
             }
@@ -97,6 +97,13 @@ impl <T: Ord + Copy> MinHeap<T> {
         self.bubble_up(end_index);
     }
 
+    pub fn heapify(&mut self, data: Vec<T>) {
+        for datum in data.iter() {
+            let to_push = *datum;
+            self.push(to_push);
+        }
+    }
+
     // Optional operation
     // pub fn delete(&mut self, item: T) {
 
@@ -120,5 +127,61 @@ impl <T: Ord + Copy> MinHeap<T> {
 
     pub fn clear(&mut self) {
         self.data = Vec::new();
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn test_heap_insertion() {
+        let mut min_heap: MinHeap<i32> = MinHeap::new();
+        let data_vec = vec![19238, 477, 827, 19, 25, 3, 1];
+        for item in data_vec.iter() {
+            let to_push = *item; // copy the item
+            min_heap.push(to_push);
+
+            if to_push == 477 {
+                assert_eq!(*min_heap.peek().unwrap(), 477);
+            } else if to_push == 25 {
+                assert_eq!(*min_heap.peek().unwrap(), 19);
+            } else if to_push == 3 {
+                assert_eq!(*min_heap.peek().unwrap(), 3);
+            } else if to_push == 1 {
+                assert_eq!(*min_heap.peek().unwrap(), 1);
+            }
+        }
+    }
+
+    #[test]
+    fn test_heapify() {
+        let mut min_heap: MinHeap<i32> = MinHeap::new();
+        let data_vec = vec![19238, 477, 827, 19, 25, 3, 1];
+        min_heap.heapify(data_vec);
+
+        assert_eq!(min_heap.len(), 7);
+        assert_eq!(*min_heap.peek().unwrap(), 1);
+    }
+
+    #[test]
+    fn test_extract_min() {
+        let mut min_heap: MinHeap<i32> = MinHeap::new();
+        let data_vec = vec![19238, 477, 827, 19, 25, 3, 1];
+        min_heap.heapify(data_vec);
+
+        let mut popped = min_heap.pop().unwrap();
+        assert_eq!(popped, 1);
+        
+        min_heap.pop();
+        popped = min_heap.pop().unwrap();
+        assert_eq!(popped, 19);
+
+        min_heap.pop();
+        popped = min_heap.pop().unwrap();
+        assert_eq!(popped, 477);
+        assert_eq!(min_heap.len(), 2);
     }
 }
